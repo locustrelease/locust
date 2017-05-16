@@ -1,6 +1,4 @@
-apt-get install -y git python python-dev python-pip
+apt-get install -y python python-dev python-pip git
 git clone https://github.com/locustio/locust.git
-cd locust
-pip install -e .
-cd ..
+pip install -e locust
 rm locust -rf
