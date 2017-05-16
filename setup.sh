@@ -1,1 +1,1 @@
-apt-get install -y python python-dev python-pip
+apt-get install -y git python python-dev python-pip
