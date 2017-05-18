@@ -46,7 +46,7 @@ of callbacks, your code looks and behaves like normal, blocking Python code.
 
 From a linux shell command just type: 
 
-sudo sh -c 'curl -s https://raw.githubusercontent.com/locustrelease/locust/master/setup.sh | sh'
+<code> sudo sh -c 'curl -s https://raw.githubusercontent.com/locustrelease/locust/master/setup.sh | sh' </code>
 
 ## Documentation
 
