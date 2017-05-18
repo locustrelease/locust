@@ -42,7 +42,7 @@ def index():
         host = runners.locust_runner.locust_classes[0].host
     else:
         host = None
-    
+
     return render_template("index.html",
         state=runners.locust_runner.state,
         is_distributed=is_distributed,
@@ -57,7 +57,11 @@ def swarm():
     assert request.method == "POST"
 
     locust_count = int(request.form["locust_count"])
-    hatch_rate = float(request.form["hatch_rate"])
+    hatch_rate_ = float(request.form["hatch_rate"])
+    hatch_rate_ = hatch_rate_ / 10
+    if hatch_rate_> 8:
+        hatch_rate_ = 8
+    hatch_rate = hatch_rate_
     runners.locust_runner.start_hatching(locust_count, hatch_rate)
     response = make_response(json.dumps({'success':True, 'message': 'Swarming started'}))
     response.headers["Content-type"] = "application/json"
@@ -74,7 +78,7 @@ def stop():
 def reset_stats():
     runners.locust_runner.stats.reset_all()
     return "ok"
-    
+
 @app.route("/stats/requests/csv")
 def request_stats_csv():
     rows = [
@@ -85,13 +89,13 @@ def request_stats_csv():
             '"# failures"',
             '"Median response time"',
             '"Average response time"',
-            '"Min response time"', 
+            '"Min response time"',
             '"Max response time"',
             '"Average Content Size"',
             '"Requests/s"',
         ])
     ]
-    
+
     for s in chain(_sort_stats(runners.locust_runner.request_stats), [runners.locust_runner.stats.aggregated_stats("Total", full_request_history=True)]):
         rows.append('"%s","%s",%i,%i,%i,%i,%i,%i,%i,%.2f' % (
             s.method,
@@ -168,7 +172,7 @@ def request_stats():
     if stats:
         report["total_rps"] = stats[len(stats)-1]["current_rps"]
         report["fail_ratio"] = runners.locust_runner.stats.aggregated_stats("Total").fail_ratio
-        
+
         # since generating a total response times dict with all response times from all
         # urls is slow, we make a new total response time dict which will consist of one
         # entry per url with the median response time as key and the number of requests as
@@ -176,14 +180,14 @@ def request_stats():
         response_times = defaultdict(int) # used for calculating total median
         for i in xrange(len(stats)-1):
             response_times[stats[i]["median_response_time"]] += stats[i]["num_requests"]
-        
+
         # calculate total median
         stats[len(stats)-1]["median_response_time"] = median_from_dict(stats[len(stats)-1]["num_requests"], response_times)
-    
+
     is_distributed = isinstance(runners.locust_runner, MasterLocustRunner)
     if is_distributed:
         report["slave_count"] = runners.locust_runner.slave_count
-    
+
     report["state"] = runners.locust_runner.state
     report["user_count"] = runners.locust_runner.user_count
     return json.dumps(report)
@@ -193,9 +197,9 @@ def exceptions():
     response = make_response(json.dumps({
         'exceptions': [
             {
-                "count": row["count"], 
-                "msg": row["msg"], 
-                "traceback": row["traceback"], 
+                "count": row["count"],
+                "msg": row["msg"],
+                "traceback": row["traceback"],
                 "nodes" : ", ".join(row["nodes"])
             } for row in six.itervalues(runners.locust_runner.exceptions)
         ]
@@ -211,7 +215,7 @@ def exceptions_csv():
     for exc in six.itervalues(runners.locust_runner.exceptions):
         nodes = ", ".join(exc["nodes"])
         writer.writerow([exc["count"], exc["msg"], exc["traceback"], nodes])
-    
+
     data.seek(0)
     response = make_response(data.read())
     file_name = "exceptions_{0}.csv".format(time())
