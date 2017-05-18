@@ -189,7 +189,7 @@ def request_stats():
         report["slave_count"] = runners.locust_runner.slave_count
 
     report["state"] = runners.locust_runner.state
-    report["user_count"] = runners.locust_runner.user_count
+    report["user_count"] = (runners.locust_runner.user_count)*10
     return json.dumps(report)
 
 @app.route("/exceptions")
