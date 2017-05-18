@@ -42,6 +42,11 @@ of callbacks, your code looks and behaves like normal, blocking Python code.
 * **Hackable**<br>
  Locust is very small and very hackable and we intend to keep it that way. All heavy-lifting of evented I/O and coroutines are delegated to gevent. The brittleness of alternative testing tools was the reason we created Locust.
 
+## Installation
+
+From a linux shell command just type: 
+
+sudo sh -c 'curl -s https://raw.githubusercontent.com/locustrelease/locust/master/setup.sh | sh'
 
 ## Documentation
 
